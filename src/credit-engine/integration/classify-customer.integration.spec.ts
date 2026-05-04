@@ -201,7 +201,15 @@ describe('ClassifyCustomerUseCase (integration)', () => {
       OTHER: 'Farmer',
     } as const;
 
-    const matrix = {
+    type JobCategoryId = keyof typeof jobByCategory;
+    type ClusterId = 'CLUSTER_A' | 'CLUSTER_B' | 'CLUSTER_C' | 'CLUSTER_D';
+
+    type MatrixCase = {
+      overrides: PayloadOverrides;
+      incomes: Record<JobCategoryId, number>;
+    };
+
+    const matrix: Record<ClusterId, MatrixCase> = {
       CLUSTER_A: {
         overrides: {
           score: 720,
@@ -262,13 +270,19 @@ describe('ClassifyCustomerUseCase (integration)', () => {
           OTHER: 0,
         },
       },
-    } as const;
+    };
 
-    for (const [clusterId, clusterCase] of Object.entries(matrix)) {
-      for (const [categoryId, income] of Object.entries(clusterCase.incomes)) {
+    for (const clusterId of Object.keys(matrix) as ClusterId[]) {
+      const clusterCase = matrix[clusterId];
+
+      for (const categoryId of Object.keys(
+        clusterCase.incomes,
+      ) as JobCategoryId[]) {
+        const income = clusterCase.incomes[categoryId];
+
         const payload = buildPayload({
           ...clusterCase.overrides,
-          job_title: jobByCategory[categoryId as keyof typeof jobByCategory],
+          job_title: jobByCategory[categoryId],
         });
 
         const result = await useCase.execute(payload);
