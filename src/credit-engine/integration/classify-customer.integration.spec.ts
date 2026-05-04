@@ -6,7 +6,8 @@ import { ClassifyCustomerRequestDto } from '../interfaces/http/dto/classify-cust
 
 type PayloadOverrides = Partial<ClassifyCustomerRequestDto>;
 
-const createUseCase = () => new ClassifyCustomerUseCase(new RulesJsonRepository());
+const createUseCase = () =>
+  new ClassifyCustomerUseCase(new RulesJsonRepository());
 
 let sequence = 0;
 
@@ -91,10 +92,7 @@ describe('ClassifyCustomerUseCase (integration)', () => {
     expect(result.approved).toBe(true);
   });
 
-  it.each([
-    [DebtType.CREDIT_DEFAULT],
-    [DebtType.LOAN_DEFAULT],
-  ])(
+  it.each([[DebtType.CREDIT_DEFAULT], [DebtType.LOAN_DEFAULT]])(
     'assigns CLUSTER_C and applies default penalty when debt type %s exists',
     async (defaultDebtType: DebtType) => {
       const useCase = createUseCase();
