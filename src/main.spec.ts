@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { Logger } from '@nestjs/common';
+import { Logger, VersioningType } from '@nestjs/common';
 import { OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { bootstrap, startApplication } from './main';
 
@@ -26,6 +26,7 @@ describe('main bootstrap', () => {
     let middleware: Middleware | undefined;
     const app = {
       enableShutdownHooks: jest.fn(),
+      enableVersioning: jest.fn(),
       use: jest.fn((handler: unknown) => {
         middleware = handler as Middleware;
       }),
@@ -47,6 +48,10 @@ describe('main bootstrap', () => {
 
     expect(createSpy).toHaveBeenCalled();
     expect(app.enableShutdownHooks).toHaveBeenCalled();
+    expect(app.enableVersioning).toHaveBeenCalledWith({
+      type: VersioningType.URI,
+      defaultVersion: '1',
+    });
     expect(app.use).toHaveBeenCalled();
     expect(app.useGlobalPipes).toHaveBeenCalled();
     expect(app.useGlobalFilters).toHaveBeenCalled();
@@ -62,6 +67,7 @@ describe('main bootstrap', () => {
     let finishCallback: (() => void) | undefined;
     const app = {
       enableShutdownHooks: jest.fn(),
+      enableVersioning: jest.fn(),
       use: jest.fn((handler: unknown) => {
         middleware = handler as Middleware;
       }),
@@ -158,6 +164,7 @@ describe('main bootstrap', () => {
 
     const app = {
       enableShutdownHooks: jest.fn(),
+      enableVersioning: jest.fn(),
       use: jest.fn(),
       useGlobalPipes: jest.fn(),
       useGlobalFilters: jest.fn(),

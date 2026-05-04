@@ -1,4 +1,4 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication, ValidationPipe, VersioningType } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { App } from 'supertest/types';
@@ -20,6 +20,10 @@ describe('CreditEngineController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.enableVersioning({
+      type: VersioningType.URI,
+      defaultVersion: '1',
+    });
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,
@@ -31,7 +35,7 @@ describe('CreditEngineController (e2e)', () => {
     await app.init();
   });
 
-  it('POST /customers/classify returns an enriched response', async () => {
+  it('POST /v1/customers/classify returns an enriched response', async () => {
     const payload = {
       id: 'cust_300',
       name: 'Joao Lima',
@@ -48,7 +52,7 @@ describe('CreditEngineController (e2e)', () => {
     };
 
     const response = await request(app.getHttpServer())
-      .post('/customers/classify')
+      .post('/v1/customers/classify')
       .send(payload)
       .expect(201);
 
@@ -74,9 +78,9 @@ describe('CreditEngineController (e2e)', () => {
     expect(body.approved).toBe(true);
   });
 
-  it('POST /customers/classify returns 400 with validation error shape for missing payload fields', async () => {
+  it('POST /v1/customers/classify returns 400 with validation error shape for missing payload fields', async () => {
     const response = await request(app.getHttpServer())
-      .post('/customers/classify')
+      .post('/v1/customers/classify')
       .send({})
       .expect(400);
 
@@ -94,7 +98,7 @@ describe('CreditEngineController (e2e)', () => {
     );
   });
 
-  it('POST /customers/classify returns 400 for out-of-range score', async () => {
+  it('POST /v1/customers/classify returns 400 for out-of-range score', async () => {
     const payload = {
       id: 'cust_400',
       name: 'Invalid Score',
@@ -110,7 +114,7 @@ describe('CreditEngineController (e2e)', () => {
     };
 
     const response = await request(app.getHttpServer())
-      .post('/customers/classify')
+      .post('/v1/customers/classify')
       .send(payload)
       .expect(400);
 
@@ -121,7 +125,7 @@ describe('CreditEngineController (e2e)', () => {
     );
   });
 
-  it('POST /customers/classify returns 400 for unknown fields', async () => {
+  it('POST /v1/customers/classify returns 400 for unknown fields', async () => {
     const payload = {
       id: 'cust_401',
       name: 'Unknown Field',
@@ -138,7 +142,7 @@ describe('CreditEngineController (e2e)', () => {
     };
 
     const response = await request(app.getHttpServer())
-      .post('/customers/classify')
+      .post('/v1/customers/classify')
       .send(payload)
       .expect(400);
 
