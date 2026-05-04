@@ -32,6 +32,51 @@ npm run start:dev
 npm run start:prod
 ```
 
+## Containerization
+
+```bash
+# build image
+npm run docker:build
+
+# run with Docker Compose (foreground)
+docker compose run --service-ports --build credit-engine
+
+# or run detached
+npm run docker:up
+
+# stop containers
+npm run docker:down
+```
+
+Container defaults:
+- Port: `3000`
+- Health endpoint: `GET /health`
+- Swagger in container: disabled by default (`ENABLE_SWAGGER=false`)
+
+## Basic deployment scripts
+
+- `scripts/deploy-image.sh`: builds versioned Docker images from `package.json` version and optionally pushes to a registry.
+
+```bash
+# optional push flow
+DOCKER_REGISTRY=ghcr.io/your-org IMAGE_NAME=credit-engine PUSH_IMAGE=true npm run docker:build
+```
+
+## Semantic versioning
+
+```bash
+# validate package version is semver-compatible
+npm run semver:check
+
+# bump versions
+npm run version:patch
+npm run version:minor
+npm run version:major
+npm run version:prerelease
+```
+
+Git tags are created automatically on pushes to `main`/`master` using the current `package.json` version (format: `vX.Y.Z`).
+
 ## Run tests
 
 ```bash
