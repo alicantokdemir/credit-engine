@@ -1,0 +1,147 @@
+{
+  "clusters": [
+    {
+      "id": "CLUSTER_A",
+      "name": "Diamond",
+      "priority": 1,
+      "score_min": 700,
+      "age_min": 25,
+      "age_max": 60,
+      "debt": { "has_market_debt": false },
+      "base_limit": 50000,
+      "cap": 100000
+    },
+    {
+      "id": "CLUSTER_B",
+      "name": "Gold",
+      "priority": 2,
+      "score_min": 500,
+      "age_min": 18,
+      "age_max": 65,
+      "debt": { "disallowed_types": ["credit_default", "loan_default"] },
+      "base_limit": 20000,
+      "cap": 40000
+    },
+    {
+      "id": "CLUSTER_C",
+      "name": "Silver",
+      "priority": 3,
+      "score_min": 300,
+      "base_limit": 5000,
+      "cap": 10000
+    },
+    {
+      "id": "CLUSTER_D",
+      "name": "Bronze",
+      "priority": 4,
+      "base_limit": 0,
+      "cap": 0,
+      "denied": true
+    }
+  ],
+  "job_categories": [
+    {
+      "id": "EXECUTIVE",
+      "priority": 1,
+      "multiplier": 2.0,
+      "keywords": [
+        "CEO",
+        "CFO",
+        "CTO",
+        "COO",
+        "CIO",
+        "CMO",
+        "Chief",
+        "President",
+        "Vice President",
+        "VP",
+        "Director"
+      ]
+    },
+    {
+      "id": "SENIOR_PROFESSIONAL",
+      "priority": 2,
+      "multiplier": 1.5,
+      "keywords": [
+        "Senior",
+        "Lead",
+        "Manager",
+        "Coordinator",
+        "Supervisor",
+        "Principal"
+      ]
+    },
+    {
+      "id": "MID_PROFESSIONAL",
+      "priority": 3,
+      "multiplier": 1.0,
+      "keywords": [
+        "Engineer",
+        "Analyst",
+        "Developer",
+        "Specialist",
+        "Designer",
+        "Accountant",
+        "Consultant",
+        "Architect"
+      ]
+    },
+    {
+      "id": "JUNIOR_PROFESSIONAL",
+      "priority": 4,
+      "multiplier": 0.7,
+      "keywords": [
+        "Junior",
+        "Trainee",
+        "Intern",
+        "Apprentice",
+        "Assistant",
+        "Associate"
+      ]
+    },
+    {
+      "id": "OTHER",
+      "priority": 5,
+      "multiplier": 0.8,
+      "keywords": []
+    }
+  ],
+  "penalties": [
+    {
+      "id": "DEFAULT_DEBT_PENALTY",
+      "priority": 1,
+      "multiplier": 0.5,
+      "disallowed_types": ["credit_default", "loan_default"]
+    }
+  ],
+  "income_matrix": {
+    "CLUSTER_A": {
+      "EXECUTIVE": 30000,
+      "SENIOR_PROFESSIONAL": 20000,
+      "MID_PROFESSIONAL": 12000,
+      "JUNIOR_PROFESSIONAL": 8000,
+      "OTHER": 10000
+    },
+    "CLUSTER_B": {
+      "EXECUTIVE": 20000,
+      "SENIOR_PROFESSIONAL": 15000,
+      "MID_PROFESSIONAL": 8000,
+      "JUNIOR_PROFESSIONAL": 5000,
+      "OTHER": 6500
+    },
+    "CLUSTER_C": {
+      "EXECUTIVE": 10000,
+      "SENIOR_PROFESSIONAL": 7000,
+      "MID_PROFESSIONAL": 5000,
+      "JUNIOR_PROFESSIONAL": 3000,
+      "OTHER": 4000
+    },
+    "CLUSTER_D": {
+      "EXECUTIVE": 0,
+      "SENIOR_PROFESSIONAL": 0,
+      "MID_PROFESSIONAL": 0,
+      "JUNIOR_PROFESSIONAL": 0,
+      "OTHER": 0
+    }
+  }
+}
