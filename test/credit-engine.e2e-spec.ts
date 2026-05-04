@@ -48,7 +48,11 @@ describe('CreditEngineController (e2e)', () => {
 
     const body = response.body as Pick<
       ClassifyCustomerResponseDto,
-      'cluster_id' | 'job_category' | 'approved_limit' | 'monthly_income' | 'approved'
+      | 'cluster_id'
+      | 'job_category'
+      | 'approved_limit'
+      | 'monthly_income'
+      | 'approved'
     >;
 
     expect(body.cluster_id).toBe('CLUSTER_B');
