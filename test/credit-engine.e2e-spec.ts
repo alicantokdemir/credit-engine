@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
+import type { ClassifyCustomerResponseDto } from '../src/credit-engine/interfaces/http/dto/classify-customer.response.dto';
 
 describe('CreditEngineController (e2e)', () => {
   let app: INestApplication<App>;
@@ -45,11 +46,16 @@ describe('CreditEngineController (e2e)', () => {
       .send(payload)
       .expect(201);
 
-    expect(response.body.cluster_id).toBe('CLUSTER_B');
-    expect(response.body.job_category).toBe('MID_PROFESSIONAL');
-    expect(response.body.approved_limit).toBe(20000);
-    expect(response.body.monthly_income).toBe(8000);
-    expect(response.body.approved).toBe(true);
+    const body = response.body as Pick<
+      ClassifyCustomerResponseDto,
+      'cluster_id' | 'job_category' | 'approved_limit' | 'monthly_income' | 'approved'
+    >;
+
+    expect(body.cluster_id).toBe('CLUSTER_B');
+    expect(body.job_category).toBe('MID_PROFESSIONAL');
+    expect(body.approved_limit).toBe(20000);
+    expect(body.monthly_income).toBe(8000);
+    expect(body.approved).toBe(true);
   });
 
   it('POST /customers/classify returns 400 for invalid payloads', async () => {

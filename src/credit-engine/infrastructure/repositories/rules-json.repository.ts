@@ -8,11 +8,11 @@ export class RulesJsonRepository implements RulesRepository {
   private readonly rules: Rules;
 
   constructor() {
-    this.rules = this.mapRules(rulesData as RulesDbEntity);
+    this.rules = this.mapRules(rulesData);
   }
 
-  async getRules(): Promise<Rules> {
-    return this.rules;
+  getRules(): Promise<Rules> {
+    return Promise.resolve(this.rules);
   }
 
   private mapRules(data: RulesDbEntity): Rules {

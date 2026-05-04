@@ -115,6 +115,49 @@ describe('ClassificationEngine', () => {
     expect(result.penaltyFactor).toBe(0.5);
   });
 
+  it('does not match cluster with market debt mismatch', () => {
+    const customer = buildCustomer({
+      score: 720,
+      hasMarketDebt: true,
+      marketDebtTypes: [DebtType.CREDIT_CARD],
+    });
+    const result = engine.classify(customer, rules);
+    expect(result.cluster.id).toBe('CLUSTER_B');
+  });
+
+  it('falls back to last category when OTHER is not configured', () => {
+    const customer = buildCustomer({ jobTitle: 'NoMatchTitle' });
+    const customRules: Rules = {
+      ...rules,
+      jobCategories: [
+        {
+          id: 'EXECUTIVE',
+          priority: 1,
+          multiplier: 2,
+          keywords: ['CEO'],
+        },
+        {
+          id: 'CUSTOM_LAST',
+          priority: 2,
+          multiplier: 0.9,
+          keywords: [],
+        },
+      ],
+    };
+
+    const result = engine.classify(customer, customRules);
+    expect(result.jobCategory.id).toBe('CUSTOM_LAST');
+  });
+
+  it('keeps penalty factor as 1 when debt exists but no penalty matches', () => {
+    const customer = buildCustomer({
+      hasMarketDebt: true,
+      marketDebtTypes: [DebtType.MORTGAGE],
+    });
+    const result = engine.classify(customer, rules);
+    expect(result.penaltyFactor).toBe(1);
+  });
+
   it('computes approved limit with rounding and cap enforcement', () => {
     expect(calculateApprovedLimit(5000, 0.7, 0.5, 10000)).toBe(1800);
     expect(calculateApprovedLimit(1000, 10, 1, 5000)).toBe(5000);

@@ -64,10 +64,9 @@ export class ClassifyCustomerRequestDto {
     required: false,
     enum: DebtType,
   })
-  @ValidateIf((dto) => dto.market_debt_types !== undefined)
+  @ValidateIf((dto: ClassifyCustomerRequestDto) => dto.has_market_debt === true)
   @IsArray()
   @IsEnum(DebtType, { each: true })
-  @ValidateIf((dto) => dto.has_market_debt === true)
   @ArrayNotEmpty()
   market_debt_types?: DebtType[];
 
