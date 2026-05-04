@@ -60,7 +60,7 @@ npm run docker:down
 
 Container defaults:
 - Port: `3000`
-- Health endpoint: `GET /health`
+- Health endpoint: `GET /v1/health`
 - Swagger in container: disabled by default (`ENABLE_SWAGGER=false`)
 
 ## Basic deployment scripts
@@ -119,4 +119,5 @@ npm run test:cov
 
 - Add optional caching for repeated classifications (keyed by request fingerprint + active rules version) to reduce repeated calculations.
 - Add explicit rules versioning (version id, draft/published state, rollback) so rule updates are auditable and safely reversible.
+- Add migration scripts for database entities to ensure seamless schema evolution and rollback-safe deployments.
 - Expand API versioning policy for `v2+` (deprecation windows, migration guides, and backward-compatibility guarantees).
