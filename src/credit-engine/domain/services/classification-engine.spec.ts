@@ -9,6 +9,7 @@ import {
   calculateApprovedLimit,
   ClassificationEngine,
   getMonthlyIncome,
+  roundToNearestHundred,
 } from './classification-engine';
 
 type CustomerOverrides = Partial<{
@@ -88,6 +89,16 @@ describe('ClassificationEngine', () => {
     expect(result.cluster.id).toBe('CLUSTER_D');
   });
 
+  it('rejects cluster A when age is below ageMin boundary', () => {
+    const customer = buildCustomer({
+      age: 24,
+      score: 750,
+      hasMarketDebt: false,
+    });
+    const result = engine.classify(customer, rules);
+    expect(result.cluster.id).toBe('CLUSTER_B');
+  });
+
   it('matches job category by priority and case-insensitively', () => {
     const customer = buildCustomer({ jobTitle: 'Senior VP Engineer' });
     const result = engine.classify(customer, rules);
@@ -149,6 +160,46 @@ describe('ClassificationEngine', () => {
     expect(result.jobCategory.id).toBe('CUSTOM_LAST');
   });
 
+  it('falls back to the last cluster when no cluster condition matches', () => {
+    const customer = buildCustomer({
+      age: 10,
+      score: 100,
+      hasMarketDebt: true,
+      marketDebtTypes: [DebtType.CREDIT_DEFAULT],
+    });
+
+    const customRules: Rules = {
+      ...rules,
+      clusters: [
+        {
+          id: 'STRICT_A',
+          name: 'Strict A',
+          priority: 1,
+          scoreMin: 900,
+          ageMin: 30,
+          ageMax: 40,
+          debt: { hasMarketDebt: false },
+          baseLimit: 1000,
+          cap: 2000,
+        },
+        {
+          id: 'STRICT_B',
+          name: 'Strict B',
+          priority: 2,
+          scoreMin: 800,
+          ageMin: 35,
+          ageMax: 50,
+          debt: { disallowedTypes: [DebtType.CREDIT_DEFAULT] },
+          baseLimit: 500,
+          cap: 1000,
+        },
+      ],
+    };
+
+    const result = engine.classify(customer, customRules);
+    expect(result.cluster.id).toBe('STRICT_B');
+  });
+
   it('keeps penalty factor as 1 when debt exists but no penalty matches', () => {
     const customer = buildCustomer({
       hasMarketDebt: true,
@@ -158,9 +209,42 @@ describe('ClassificationEngine', () => {
     expect(result.penaltyFactor).toBe(1);
   });
 
+  it('applies penalty by priority order when multiple penalty rules exist', () => {
+    const customer = buildCustomer({
+      hasMarketDebt: true,
+      marketDebtTypes: [DebtType.MORTGAGE],
+    });
+
+    const customRules: Rules = {
+      ...rules,
+      penalties: [
+        {
+          id: 'LOW_PRIORITY',
+          priority: 2,
+          multiplier: 0.9,
+          disallowedTypes: [DebtType.MORTGAGE],
+        },
+        {
+          id: 'HIGH_PRIORITY',
+          priority: 1,
+          multiplier: 0.6,
+          disallowedTypes: [DebtType.MORTGAGE],
+        },
+      ],
+    };
+
+    const result = engine.classify(customer, customRules);
+    expect(result.penaltyFactor).toBe(0.6);
+  });
+
   it('computes approved limit with rounding and cap enforcement', () => {
     expect(calculateApprovedLimit(5000, 0.7, 0.5, 10000)).toBe(1800);
     expect(calculateApprovedLimit(1000, 10, 1, 5000)).toBe(5000);
+  });
+
+  it('rounds to nearest 100 with midpoint rounding up', () => {
+    expect(roundToNearestHundred(1749)).toBe(1700);
+    expect(roundToNearestHundred(1750)).toBe(1800);
   });
 
   it('returns monthly income for each cluster and job category', () => {

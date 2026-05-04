@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
-import { bootstrap } from './main';
+import { bootstrap, startApplication } from './main';
 
 describe('main bootstrap', () => {
   it('bootstraps app with validation and swagger', async () => {
@@ -28,5 +28,21 @@ describe('main bootstrap', () => {
     createSpy.mockRestore();
     createDocumentSpy.mockRestore();
     setupSpy.mockRestore();
+  });
+
+  it('starts app when NODE_ENV is not test', () => {
+    const start = jest.fn<Promise<void>, []>().mockResolvedValue(undefined);
+
+    startApplication('development', start);
+
+    expect(start).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not start app when NODE_ENV is test', () => {
+    const start = jest.fn<Promise<void>, []>().mockResolvedValue(undefined);
+
+    startApplication('test', start);
+
+    expect(start).not.toHaveBeenCalled();
   });
 });
