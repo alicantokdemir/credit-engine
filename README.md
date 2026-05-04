@@ -113,11 +113,11 @@ npm run test:cov
 - Global request logging is enabled at bootstrap.
 - Global exception handling logs errors and normalizes unexpected failures.
 - Graceful shutdown hooks are enabled for `SIGINT`/`SIGTERM` handling.
-- Future improvement: introduce a Money value object (or dedicated money library) for stricter currency precision and safer financial calculations.
 
 ## Future improvements
 
-- Add optional caching for repeated classifications (keyed by request fingerprint + active rules version) to reduce repeated calculations.
+- Introduce a Money value object (or dedicated money library) for stricter currency precision and safer financial calculations.
+- Add caching for repeated classifications (keyed by request fingerprint + active rules version) to reduce repeated calculations.
 - Add explicit rules versioning (version id, draft/published state, rollback) so rule updates are auditable and safely reversible.
 - Add migration scripts for database entities to ensure seamless schema evolution and rollback-safe deployments.
 - Expand API versioning policy for `v2+` (deprecation windows, migration guides, and backward-compatibility guarantees).
